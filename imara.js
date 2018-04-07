@@ -13,10 +13,13 @@ let TxStruct = vstruct([
 ])
 
 exports.handler = function(state, rawTx) {
+      console.log(rawTx)
+      console.log('test')
       let tx = deserializeTx(rawTx)
-      if (!verifyTx(tx)) {
-              return
-            }
+      console.log('test')
+      //if (!verifyTx(tx)) {
+      //        return
+      //      }
 
       let senderAddress = tx.senderAddress.toString('hex')
       let receiverAddress = tx.receiverAddress.toString('hex')
@@ -27,15 +30,19 @@ exports.handler = function(state, rawTx) {
       if(senderAddress === receiverAddress) {
               return
             }
+      console.log('test2')
       if (!Number.isInteger(tx.amount)) {
               return
             }
-      if (tx.amount > senderBalance) {
-              return
-            }
-      if (tx.nonce !== (state.nonces[senderAddress] || 0)) {
-              return
-            }
+      console.log('test2')
+      //if (tx.amount > senderBalance) {
+      //        return
+      //      }
+      console.log('test2')
+      //if (tx.nonce !== (state.nonces[senderAddress] || 0)) {
+      //        return
+      //      }
+      console.log('test2')
       senderBalance -= tx.amount
       receiverBalance += tx.amount
 
@@ -97,6 +104,7 @@ function deserializeTx(tx) {
               'receiverAddress',
               'signature'
             ].forEach(key => {
+                    console.log('test3')
                     deserialized[key] = Buffer.from(deserialized[key], 'base64')
                   })
 

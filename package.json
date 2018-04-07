@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/haithamelmengad/imara/issues"
   },
-  "homepage": "https://github.com/haithamelmengad/imara#readme"
+  "homepage": "https://github.com/haithamelmengad/imara#readme",
+  "dependencies": {
+    "lotion": "^0.1.17"
+  }
 }
