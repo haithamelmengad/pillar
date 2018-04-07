@@ -1,0 +1,19 @@
+{
+  "name": "imara",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/haithamelmengad/imara.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/haithamelmengad/imara/issues"
+  },
+  "homepage": "https://github.com/haithamelmengad/imara#readme"
+}
