@@ -11,10 +11,13 @@ const app = lotion({
         },
         bondQueue: [],
         bondFactor : 0.9
+        //votePrices: [],
+        votes: {},
     },
     // logTendermint: true,
     devMode: true
 })
+
 
 app.use(coins({
     name: 'imara',
@@ -47,7 +50,7 @@ app.use(coins({
         'bonds':{
 
             onInput(input, tx, substate, chain, state) {
-                
+
                 if(!(input)) {
                     throw Error('this input isn\'t valid!')
                 }
@@ -59,8 +62,44 @@ app.use(coins({
 
             }
         }
+        'price':{
+
+            onInput(input, tx, substate, chain, state) {
+
+                if(!(input)) {
+                    throw Error('this input isn\'t valid!')
+                }
+
+                state.votePrices[input.senderAddress] = input.price
+                state.stakedAmount[input.senderAddress] = input.amount
+                if(!(state.height%60)) {
+                    var totalPrices = 0;
+                    var totalWeight = 0;
+                    for (var address in state.votePrices) {
+                        totalPrices += state.votePrices[address] * state.stakedAmount[address]
+                        totalWeight += state.stakedAmount[address]
+                    }
+                    var finalPrice = totalPrices/totalWeight
+                    for (var address in state.votePrices) {
+                        if (state.votePrices[address] < finalPrice * 0.95) {
+                            state.accounts[address].balance -= state.stakedAmount[address] * state.votePrices[address]/finalPrice
+                        }
+                        else if (state.votePrices[address] > finalPrice * 1.05) {
+                            state.accounts[address].balance -= state.stakedAmount[address] * finalPrice/state.votePrices[address]
+                        }
+                        else {
+                            state.accounts[address].balance += state.stakedAmount[address] * 0.0001
+                        }
+                    }
+                }
+            },
+
+            onOutput(output, tx, substate, chain, state) {
+
+            }
+        }
     }
-}))    
+}))
 
 // app.listen(3000)
 app.listen(3000).then(appInfo => {
