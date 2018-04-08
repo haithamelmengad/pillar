@@ -8,6 +8,10 @@ import MenuBar from './menu'
 import Wallet from './wallet'
 import Vote from './vote'
 import Bonds from './bonds'
+import { nativeImage } from 'electron'
+
+let logo = nativeImage.createFromPath('./Pillar.png')
+
 
 class App extends Component {
   constructor (props) {
@@ -122,11 +126,11 @@ class App extends Component {
 
   render () {
     return (
-    this.state.connected ? <Grid style={{ padding: '15px', fontSize: '18px' }}>
+    this.state.connected ? <Grid style={{ fontSize: '18px', backgroundColor: 'rgba(55,62,68,1)', alignItems: 'center', justifyContent: 'center', background:'radial-gradient(55,62,68)' }}>
       <Grid.Column width={4}>
         <MenuBar handleItemClick={this.handleItemClick.bind(this)} activeItem={this.state.activeItem} finalPrice={this.state.finalPrice} />
       </Grid.Column>
-      <Grid.Column  width={12}>
+      <Grid.Column  width={11} >
          {this.getView()}
       </Grid.Column>
     </Grid> : <Dimmer active><Loader indeterminate>Connecting</Loader></Dimmer> )

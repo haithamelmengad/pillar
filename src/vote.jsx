@@ -10,46 +10,47 @@ const Vote = (props) => {
         label: 'Price',
         fill: true,
         lineTension: 0.1,
-        backgroundColor: 'rgba(75,192,192,0.4)',
-        borderColor: 'rgba(75,192,192,1)',
+        backgroundColor: 'rgba(5, 128, 188, 0.7)',
+        borderColor: 'rgba(5, 169, 188, 0.9))',
         borderCapStyle: 'butt',
         borderDash: [],
         borderDashOffset: 0.0,
         borderJoinStyle: 'miter',
         pointBorderColor: 'rgba(75,192,192,1)',
         pointBackgroundColor: '#fff',
-        pointBorderWidth: 1,
+        pointBorderWidth: 0,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-        pointHoverBorderColor: 'rgba(220,220,220,1)',
+        pointHoverBackgroundColor: 'rgba(5, 169, 188, 0.6)',
+        pointHoverBorderColor: 'rgba(5, 169, 188, 0.6)',
         pointHoverBorderWidth: 2,
-        pointRadius: 1,
+        pointRadius: 0,
         pointHitRadius: 10,
         data: [0, 59, 80, 81, 56, 55, 40]
-      }
-    ]
+    }
+  ]
   }
-
   return (
     <div>
-    <Card fluid>
+    <Card fluid style={{backgroundColor: '#F8F8FF'}}>
       <Card.Content>
       <Line data={data} />
       </Card.Content>
     </Card>
-    <Card fluid>
+    <Card fluid style={{backgroundColor: '#0580BC', color: '#F8F8FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Card.Content>
         <Form>
-        <Form style={{fontSize: '20px'}}>
+        <h3>Vote</h3>
+        <Divider/>
+        <Form style={{fontSize: '15px'}}>
           <Form.Field>
-            <label>Stake</label>
+            <label style={{color: 'Ghostwhite'}}>Stake</label>
             <input name='stake' placeholder='stake' />
           </Form.Field>
           <Form.Field>
-            <label>Price</label>
+            <label style={{color: 'Ghostwhite'}}>Price</label>
             <input name='price' placeholder='price' />
           </Form.Field>
-          <Button type='submit'>Submit</Button>
+          <Button type='submit' style={{color: '#F8F8FF', backgroundColor:'rgba(72,77,83,1)'}}>Submit</Button>
         </Form>
         </Form>
       </Card.Content>
