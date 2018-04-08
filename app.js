@@ -3,21 +3,31 @@ const coins = require('coins')
 
 const app = lotion({
     initialState: {
-        'ting': {
+        accounts: [{
+            'ting': {
             balance: 10,
+            }
         },
-        'wai':  {
+        {
+            'wai' :  {
             balance: 10,
-        },
+            }
+        }],
         bondQueue: [],
-        bondFactor : 0.9
-        //votePrices: [],
-        votes: {},
+        bondFactor : 0.9,
+        airdropFactor: 1.1,
+        marketCap : 20
     },
     // logTendermint: true,
     devMode: true
 })
 
+const redeemBonds = (factor, bondqueue) => {
+
+    while(bondqueue.length && ){
+
+    }
+}
 
 app.use(coins({
     name: 'imara',
@@ -46,7 +56,30 @@ app.use(coins({
                 state[output.receiverAddress].balance = (state[output.receiverAddress].balance || 0) + output.amount
             }
         },
-        'airdrop':{},
+        'airdrop':{
+
+            onInput(input, tx, substate, chain, state) {
+
+                if(!(input)) {
+                    throw Error('this input isn\'t valid!')
+                }
+
+                const targetCap = state.marketCap * state.airdropFactor
+                while(state.bondqueue.length && state.marketCap < targetCap){
+                    state.bondqueue[].balance = (state[input.senderAddress].balance || 0) - input.amount*state.bondFactor
+                    state.marketCap += 1
+                }
+                state[input.senderAddress].balance = (state[input.senderAddress].balance || 0) - input.amount*state.bondFactor
+                state.bondQueue.pop({bondowner : input.senderAddress, amount: input.amount})
+
+
+
+            },
+            onOutput(input, tx, substate, chain, state){
+
+            }
+
+        },
         'bonds':{
 
             onInput(input, tx, substate, chain, state) {
@@ -55,10 +88,9 @@ app.use(coins({
                     throw Error('this input isn\'t valid!')
                 }
                 state.bondQueue.push({bondowner : input.senderAddress, amount: input.amount})
-            },
 
-            onOutput(output, tx, substate, chain, state) {
-                state[output.receiverAddress].balance = (state[output.receiverAddress].balance || 0) - output.amount*state.bondFactor
+
+                state[input.senderAddress].balance = (state[input.senderAddress].balance || 0) - input.amount*state.bondFactor
 
             }
         }
