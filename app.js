@@ -3,7 +3,7 @@ const coins = require('coins')
 
 const app = lotion({
     initialState: {
-        accounts: [{
+        wallets: [{
             'ting': {
             balance: 10,
             }
@@ -109,7 +109,7 @@ app.use(coins({
 
                 state.votePrices[input.senderAddress] = input.price
                 state.stakedAmount[input.senderAddress] = input.amount
-                state.accounts[input.senderAddress] -= input.amount
+                state.accounts[input.senderAddress].balance -= input.amount
 		        if(chain.height%60) {
                     if(!state.waiting){
                         state.voteAfter = chain.height + 60
