@@ -1,19 +1,34 @@
 import React, { Component } from 'react'
+import { connect } from 'lotion'
+import coins from 'coins'
+import { randomBytes } from 'crypto'
+import { Dimmer, Loader } from 'semantic-ui-react'
 import MenuBar from './menu'
 import Wallet from './wallet'
 import Vote from './vote'
 import Bonds from './bonds'
 
 class App extends Component {
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
 
     this.state = {
       activeItem: 'wallet',
       address: '1234567890',
       balance: 3,
-      bonds: 4
+      bonds: 4,
+      wallet: null,
+      client: null,
+      connected: false
     }
+  }
+
+  componentDidMount () {
+    connect(this.props.gci)
+      .then((state, send) => {
+        var client = {state, send}
+        setTimeout(() => {this.setState({connected: true, client: client, wallet: coins.wallet(randomBytes(32), client)})}, 2000)
+      })
   }
 
   handleItemClick (event, { name }) {
@@ -54,7 +69,7 @@ class App extends Component {
     return (
     <div style={{ padding: '15px' }}>
       <MenuBar handleItemClick={this.handleItemClick.bind(this)} activeItem={this.state.activeItem} />
-      { this.getView() }
+      { this.state.connected ? this.getView() : <Dimmer active><Loader indeterminate>Connecting</Loader></Dimmer> }
     </div>)
   }
 }

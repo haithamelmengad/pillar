@@ -12,10 +12,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {AppContainer} from 'react-hot-loader'
+import {ipcRenderer} from 'electron'
 
 const render = () => {
   const App = require('./app').default
-  ReactDOM.render(<AppContainer><App /></AppContainer>, document.getElementById('App'))
+  var result = ipcRenderer.sendSync('getCGI')
+  ReactDOM.render(<AppContainer><App gci={result.GCI} /></AppContainer>, document.getElementById('App'))
 }
 
 render()

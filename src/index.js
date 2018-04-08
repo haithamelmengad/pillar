@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { enableLiveReload } from 'electron-compile';
+import {ipcMain} from 'electron'
 
 import Imara from './coin'
 
@@ -8,19 +9,26 @@ import Imara from './coin'
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-let coin = new Imara()
+let imara = new Imara()
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
 if (isDevMode) enableLiveReload({ strategy: 'react-hmr' });
 
 const createWindow = async () => {
+
+  // Need to be here !
+  var cgi = await imara.init()
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
   });
 
+  ipcMain.on('getCGI', async (event) => {
+    event.returnValue = cgi
+  })
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`);
