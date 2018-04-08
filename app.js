@@ -24,6 +24,7 @@ const app = lotion({
         votePrices: {},
         stakedAmount: {},
         lastVoteWindow: 0,
+        finalPrice: 0
     },
     // logTendermint: true,
     devMode: true
