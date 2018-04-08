@@ -11,7 +11,8 @@ class App extends Component {
     this.state = {
       activeItem: 'wallet',
       address: '1234567890',
-      balance: 3
+      balance: 3,
+      bonds: 4
     }
   }
 
@@ -28,6 +29,14 @@ class App extends Component {
     })
   }
 
+  buyBond (amount) {
+    console.log('BUY BOND !')
+    console.log('Amount :', amount)
+    return new Promise (function (resolve, reject) {
+      setTimeout(function (){ resolve() }, 3000)
+    })
+  }
+
   getView () {
     switch (this.state.activeItem) {
       case 'wallet':
@@ -35,7 +44,7 @@ class App extends Component {
       case 'vote':
         return <Vote />
       case 'bonds':
-        return <Bonds />
+        return <Bonds bonds={this.state.bonds} buyBond={this.buyBond.bind(this)} />
       default:
         throw new Error('Unknown view')
     }
