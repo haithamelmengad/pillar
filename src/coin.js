@@ -6,20 +6,29 @@ const url = 'http://localhost:3000'
 class Imara {
   constructor () {
     this.app = lotion({
-        initialState: {
+      initialState: {
           wallets: {
-              "ting": {
-              balance: 20
-              }
-          ,
-              "wai" :  {
-              balance: 20
+              'ting': {
+                  balance: 100,
+                  bonds: 0
+              },
+              'wai': {
+                  balance: 100,
+                  bonds: 0
+              },
+              'badActor': {
+                  balance: 100,
+                  bonds: 0
               }
           },
-          bondQueue: [{bondowner: 'ting', amount: 2}],
-          bondFactor : 0.9,
+          bondQueue: [],
+          bondFactor: 0.9,
           airdropFactor: 1.1,
-          supply : 40
+          marketCap: 20,
+          votePrices: {},
+          stakedAmount: {},
+          lastVoteWindow: 0,
+          finalPrice: 0
       },
       // logTendermint: true,
       devMode: true
@@ -101,12 +110,63 @@ class Imara {
                       throw Error('this input isn\'t valid!')
                   }
                   state.bondQueue.push({bondowner : input.senderAddress, amount: input.amount})
-
+                  state.wallets[input.senderAddress].bonds += input.amount
                   state.wallets[input.senderAddress].balance = (state.wallets[input.senderAddress].balance || 0) - input.amount*state.bondFactor
               },
 
-              onOutput(input, tx, substate, chain, state){
+              onOutput(input, tx, substate, chain, state) {
+                
+              }
+          },
+          'vote': {
 
+              onInput(input, tx, substate, chain, state) {
+
+                  if (!(input)) {
+                      throw Error('this input isn\'t valid!')
+                  }
+
+                  console.log(chain.height)
+                  console.log(state)
+
+                  if ((chain.height - state.lastVoteWindow) > 20) {
+                      state.lastVoteWindow = chain.height
+                  } else {
+                      return
+                  }
+
+                  if (input.senderAddress in state.votePrices) {
+                      return
+                  }
+
+                  state.votePrices[input.senderAddress] = input.price
+                  state.stakedAmount[input.senderAddress] = input.amount
+                  state.wallets[input.senderAddress].balance -= input.amount
+
+                  var totalPrices = 0;
+                  var totalWeight = 0;
+                  for (var address in state.votePrices) {
+                      totalPrices += state.votePrices[address] * state.stakedAmount[address]
+                      totalWeight += state.stakedAmount[address]
+                  }
+                  console.log(totalPrices, totalWeight)
+                  state.finalPrice = totalPrices / totalWeight
+                  for (var address in state.votePrices) {
+                      if (state.votePrices[address] < state.finalPrice * 0.95) {
+                          continue
+                      }
+                      else if (state.votePrices[address] > state.finalPrice * 1.05) {
+                          continue
+                      }
+                      else {
+                          continue
+                          // state.wallets[address].balance += state.stakedAmount[address] * 1.01
+                      }
+                  }
+                  state.votePrices = {}
+                  state.stakedAmount = {}
+              },
+              onOutput(output, tx, substate, chain, state) {
               }
           }
       }

@@ -22,8 +22,8 @@ const createWindow = async () => {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 900,
+    height: 825,
   });
 
   ipcMain.on('getCGI', async (event) => {

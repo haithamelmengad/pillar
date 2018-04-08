@@ -30,11 +30,11 @@ class Wallet extends Component {
   render () {
     return (
       <div>
-        <h1>Wallet</h1>
       <Card fluid>
         <Card.Content>
 
           <b>Your address :</b> {this.props.address}
+          <br />
           <br />
           <b>Your balance :</b> {this.props.balance} IMR
 

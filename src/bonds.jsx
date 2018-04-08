@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Card, Form, Button, Divider, Loader } from 'semantic-ui-react'
+import { Card, Form, Button, Divider, Loader, Statistic } from 'semantic-ui-react'
 
 class Bonds extends Component {
   constructor () {
@@ -26,21 +26,17 @@ class Bonds extends Component {
   render () {
     return (
       <div>
-        <h1>Bonds</h1>
-      <Card fluid>
-        <Card.Content>
-          <b>Number of bonds :</b> {this.props.bonds} bonds
-        </Card.Content>
-      </Card>
+        <Statistic horizontal size='large' label='Bonds' value={this.props.bonds} />
+
       <Card fluid>
         <Card.Content>
 
-          <h3>Buy bonds</h3>
+          <h1>Buy bonds</h1>
           <Divider />
 
           {this.state.pending
             ? <Loader active inline='centered' />
-            : <Form onSubmit={this.buyBond.bind(this)}>
+            : <Form style={{fontSize: '20px'}} onSubmit={this.buyBond.bind(this)}>
               <Form.Field>
                 <label>Amount</label>
                 <input name='amount' value={this.state.amount} onChange={this.handleAmountChanged.bind(this)} placeholder='amout' />
