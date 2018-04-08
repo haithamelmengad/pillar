@@ -99,7 +99,8 @@ app.use(coins({
                     throw Error('this input isn\'t valid!')
                 }
                 state.bondQueue.push({bondowner : input.senderAddress, amount: input.amount})
-
+                
+                state.supply -= input.amount*state.bondFactor
                 state.wallets[input.senderAddress].balance = (state.wallets[input.senderAddress].balance || 0) - input.amount*state.bondFactor
             },
 
