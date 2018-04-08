@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/haithamelmengad/imara#readme",
   "dependencies": {
+    "coins": "^2.8.0",
     "lotion": "^0.1.17"
   }
 }
