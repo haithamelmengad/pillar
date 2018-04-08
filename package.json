@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "coins": "git+https://github.com/keppel/coins.git",
+    "coins": "^2.7.0",
     "electron-compile": "^6.4.2",
     "electron-devtools-installer": "^2.1.0",
     "electron-squirrel-startup": "^1.0.0",

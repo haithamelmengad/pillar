@@ -24,11 +24,21 @@ class App extends Component {
   }
 
   componentDidMount () {
-    connect(this.props.gci)
-      .then((state, send) => {
-        var client = {state, send}
-        setTimeout(() => {this.setState({connected: true, client: client, wallet: coins.wallet(randomBytes(32), client)})}, 2000)
-      })
+    this.getState()
+      /*.then((client) => {
+        console.log(client)
+        //var buffer = Buffer.from('419f0dfdb617865ad6e64b381a6552aff3a2c6aa7e363f43b0186a8d5b9d1ac5', 'hex')
+        //var wallet = coins.wallet(buffer, client)
+        var address = '123'
+        var balance = 13
+        setTimeout(() => {this.setState({connected: true, client: client, address: address, balance: balance })}, 2000)
+      })*/
+  }
+
+  async getState () {
+    console.log(this.props.gci)
+    let { state, send } = await connect(this.props.gci)
+    console.log(await state)
   }
 
   handleItemClick (event, { name }) {
