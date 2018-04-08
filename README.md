@@ -1,5 +1,5 @@
 Impact:
-One of the largest barriers to using cryptocurrencies is the volatility. This volatility leads to two problems. First, this leads to over-speculation, and second, the upside of using cryptocurrencies just isn't worth the risk for most people. Stablecoins are the answer to the volatility problem. They have all the decentralized properties of normal cryptocurrencies, with orders of magnitude less volatility. 
+One of the largest barriers to using cryptocurrencies is the volatility. This volatility leads to two problems. First, this leads to over-speculation, and second, the upside of using cryptocurrencies just isn't worth the risk for most people. Stablecoins are the answer to the volatility problem. They have all the decentralized properties of normal cryptocurrencies, with much less volatility. 
 
 VENEZUELA EXAMPLE:
     - Bolivar is super volatile
