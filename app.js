@@ -16,7 +16,11 @@ const app = lotion({
         bondQueue: [],
         bondFactor : 0.9,
         airdropFactor: 1.1,
-        marketCap : 20
+        marketCap : 20,
+        votePrices: {},
+        stakedAmount: {},
+        voteAfter: 0,
+        waiting: true
     },
     // logTendermint: true,
     devMode: true
@@ -25,6 +29,7 @@ const app = lotion({
 const redeemBonds = (factor, bondqueue) => {
 
     while(bondqueue.length && ){
+
 
     }
 }
@@ -93,7 +98,7 @@ app.use(coins({
                 state[input.senderAddress].balance = (state[input.senderAddress].balance || 0) - input.amount*state.bondFactor
 
             }
-        }
+        },
         'price':{
 
             onInput(input, tx, substate, chain, state) {
@@ -104,36 +109,42 @@ app.use(coins({
 
                 state.votePrices[input.senderAddress] = input.price
                 state.stakedAmount[input.senderAddress] = input.amount
-                if(!(state.height%60)) {
-                    var totalPrices = 0;
-                    var totalWeight = 0;
-                    for (var address in state.votePrices) {
-                        totalPrices += state.votePrices[address] * state.stakedAmount[address]
-                        totalWeight += state.stakedAmount[address]
+                state.accounts[input.senderAddress] -= input.amount
+		        if(chain.height%60) {
+                    if(!state.waiting){
+                        state.voteAfter = chain.height + 60
                     }
-                    var finalPrice = totalPrices/totalWeight
-                    for (var address in state.votePrices) {
-                        if (state.votePrices[address] < finalPrice * 0.95) {
-                            state.accounts[address].balance -= state.stakedAmount[address] * state.votePrices[address]/finalPrice
-                        }
-                        else if (state.votePrices[address] > finalPrice * 1.05) {
-                            state.accounts[address].balance -= state.stakedAmount[address] * finalPrice/state.votePrices[address]
-                        }
-                        else {
-                            state.accounts[address].balance += state.stakedAmount[address] * 0.0001
-                        }
-                    }
+                    state.waiting = true
+		        }
+                if(chain.height < state.voteAfter) {
+                    return
+		        }
+                state.waiting = false
+                var totalPrices = 0;
+                var totalWeight = 0;
+                for (var address in state.votePrices) {
+                    totalPrices += state.votePrices[address] * state.stakedAmount[address]
+                    totalWeight += state.stakedAmount[address]
                 }
+                state.finalPrice = totalPrices/totalWeight
+                for (var address in state.votePrices) {
+                    if (state.votePrices[address] < state.finalPrice * 0.95) {
+                        return
+                    }
+                    else if (state.votePrices[address] > state.finalPrice * 1.05) {
+                        return
+                    }
+                    else {
+                        state.accounts[address].balance += state.stakedAmount[address] * 1.01
+                    }
+                } 
             },
-
             onOutput(output, tx, substate, chain, state) {
-
             }
         }
     }
 }))
 
-// app.listen(3000)
 app.listen(3000).then(appInfo => {
     console.log(appInfo.GCI)
 })
