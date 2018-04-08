@@ -6,6 +6,7 @@ const MenuBar = (props) => {
     <Menu pointing secondary>
       <Menu.Item name='wallet' active={props.activeItem === 'wallet'} onClick={props.handleItemClick} />
       <Menu.Item name='vote' active={props.activeItem === 'vote'} onClick={props.handleItemClick} />
+      <Menu.Item name='bonds' active={props.activeItem === 'bonds'} onClick={props.handleItemClick} />
     </Menu>
   )
 }
