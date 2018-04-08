@@ -16,4 +16,4 @@ Right now, imara can send money back and forth between wallets. When the price i
 Next Steps:
 Turn imara into a lotionjs library so other apps can pull from it.
 
-To run this app, clone it then run `npm install`. `node app.js` starts the app, and `WALLET COMMAND HERE` starts the GUI.
+To run this app, clone it then run `npm install`. `node app.js` starts the app, and `npm start` starts the GUI.
