@@ -1,3 +1,7 @@
+<<<<<<< HEAD
 node_modules
 out
 .eslintcache
+=======
+node_modules/
+>>>>>>> master
