@@ -26,22 +26,22 @@ class Bonds extends Component {
   render () {
     return (
       <div>
-        <Statistic horizontal size='large' label='Bonds' value={this.props.bonds} />
+        <Statistic horizontal className='inverted' size='large' label='Bonds owned' value={this.props.bonds} />
 
-      <Card fluid>
+      <Card fluid style={{backgroundColor: '#0580BC', color: '#F8F8FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Card.Content>
 
-          <h1>Buy bonds</h1>
+          <h3>Buy bonds</h3>
           <Divider />
 
           {this.state.pending
             ? <Loader active inline='centered' />
             : <Form style={{fontSize: '20px'}} onSubmit={this.buyBond.bind(this)}>
               <Form.Field>
-                <label>Amount</label>
+                <label style = {{color: '#F8F8FF', fontSize: '15px' }}>Amount</label>
                 <input name='amount' value={this.state.amount} onChange={this.handleAmountChanged.bind(this)} placeholder='amout' />
               </Form.Field>
-            <Button type='submit'>Submit</Button>
+              <Button type='submit' style={{color: '#F8F8FF', backgroundColor:'rgba(72,77,83,1)'}}>Submit</Button>
           </Form>}
 
         </Card.Content>

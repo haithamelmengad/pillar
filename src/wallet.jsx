@@ -30,17 +30,16 @@ class Wallet extends Component {
   render () {
     return (
       <div>
-      <Card fluid>
+      <Card fluid style={{backgroundColor: '#0580BC', color: '#F8F8FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Card.Content>
 
-          <b>Your address :</b> {this.props.address}
-          <br />
-          <br />
-          <b>Your balance :</b> {this.props.balance} IMR
+          <h3> Address: {this.props.address} </h3> 
+          <Divider />
+          <h3> Balance:  {this.props.balance} IMR </h3>
 
         </Card.Content>
       </Card>
-      <Card fluid>
+      <Card fluid style={{backgroundColor: '#0580BC', color: '#F8F8FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Card.Content>
 
           <h3>Send</h3>
@@ -48,15 +47,14 @@ class Wallet extends Component {
 
           {this.state.pending ? <Loader active inline='centered' /> : <Form onSubmit={this.sendTransaction.bind(this)}>
             <Form.Field>
-              <label>To</label>
+              <label style={{color: '#F8F8FF', fontSize: '15px'}}>To</label>
               <input name='address' value={this.state.address} onChange={this.handleAddressChanged.bind(this)} placeholder='address' />
             </Form.Field>
             <Form.Field>
-              <label>Amount</label>
+              <label style={{color: '#F8F8FF', fontSize: '15px'}}>Amount</label>
               <input name='amount' value={this.state.amount} onChange={this.handleAmountChanged.bind(this)} placeholder='amout' />
             </Form.Field>
-            <Button type='submit'>Submit</Button>
-          </Form>}
+            <Button type='submit' style={{color: '#F8F8FF', backgroundColor:'rgba(72,77,83,1)'}}>Submit</Button>          </Form>}
         </Card.Content>
       </Card>
     </div>
