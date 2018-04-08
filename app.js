@@ -125,7 +125,7 @@ app.use(coins({
 
                 state.votePrices[input.senderAddress] = input.price
                 state.stakedAmount[input.senderAddress] = input.amount
-                state.wallets[input.senderAddress].balance -= input.amount
+                //state.wallets[input.senderAddress].balance -= input.amount
 
                 var totalPrices = 0;
                 var totalWeight = 0;
