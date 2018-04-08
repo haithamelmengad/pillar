@@ -24,13 +24,13 @@ class Imara {
           bondQueue: [],
           bondFactor: 0.9,
           airdropFactor: 1.1,
-          marketCap: 20,
+          supply: 20,
           votePrices: {},
           stakedAmount: {},
           lastVoteWindow: 0,
           finalPrice: 0
       },
-      logTendermint: true,
+      // logTendermint: true,
       createEmptyBlocks: true,
       devMode: true
     })
@@ -49,13 +49,12 @@ class Imara {
       var totalPrices = 0;
       var totalWeight = 0;
 
-      console.log(state.votePrices)
 
       for (var address in state.votePrices) {
           totalPrices += state.votePrices[address] * state.stakedAmount[address]
           totalWeight += state.stakedAmount[address]
       }
-      console.log(totalPrices, totalWeight)
+
       if (totalWeight > 0) {
         state.finalPrice = totalPrices / totalWeight
       }
@@ -185,7 +184,6 @@ class Imara {
   }
 
   async init () {
-    console.log(this.app)
     return await this.app.listen(3000)
   }
 

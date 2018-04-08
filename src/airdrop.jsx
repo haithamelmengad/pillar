@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Card, Form, Button, Divider, Loader } from 'semantic-ui-react'
+import { Card, Form, Button, Divider, Loader, Statistic } from 'semantic-ui-react'
 
 class Airdrop extends Component {
   constructor () {
@@ -11,35 +11,20 @@ class Airdrop extends Component {
   }
 
   submit () {
-
+    this.props.airdrop()
   }
 
   render () {
     return (
       <div>
-      <Card fluid>
+
+        <Statistic horizontal className='inverted' size='large' label='Circulating supply ' value={this.props.supply} />
+
+
+      <Card fluid style={{backgroundColor: '#0580BC', color: '#F8F8FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Card.Content>
-
-          <b>Your address :</b> {this.props.marketcap}
-
-        </Card.Content>
-      </Card>
-      <Card fluid>
-        <Card.Content>
-
-          <h3>Send</h3>
-          <Divider />
-
-          {this.state.pending ? <Loader active inline='centered' /> : <Form onSubmit={this.sendTransaction.bind(this)}>
-            <Form.Field>
-              <label>To</label>
-              <input name='address' value={this.state.address} onChange={this.handleAddressChanged.bind(this)} placeholder='address' />
-            </Form.Field>
-            <Form.Field>
-              <label>Amount</label>
-              <input name='amount' value={this.state.amount} onChange={this.handleAmountChanged.bind(this)} placeholder='amout' />
-            </Form.Field>
-            <Button type='submit'>Submit</Button>
+          {this.state.pending ? <Loader active inline='centered' /> : <Form onSubmit={this.submit.bind(this)}>
+          <Button type='submit' style={{color: '#F8F8FF', backgroundColor:'rgba(72,77,83,1)'}}>Participate</Button>
           </Form>}
         </Card.Content>
       </Card>
@@ -48,4 +33,4 @@ class Airdrop extends Component {
   }
 }
 
-export default Wallet
+export default Airdrop

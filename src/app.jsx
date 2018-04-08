@@ -8,6 +8,7 @@ import MenuBar from './menu'
 import Wallet from './wallet'
 import Vote from './vote'
 import Bonds from './bonds'
+import Airdrop from './airdrop'
 import { nativeImage } from 'electron'
 
 let logo = nativeImage.createFromPath('./Pillar.png')
@@ -25,6 +26,7 @@ class App extends Component {
       wallet: null,
       client: null,
       finalPrice: 0,
+      supply: 0,
       connected: false
     }
   }
@@ -39,7 +41,8 @@ class App extends Component {
             var balance = wallets.ting.balance
             var bonds = wallets.ting.bonds || 0
             var finalPrice = await client.state.finalPrice
-            this.setState({connected: true, client: client, address: address, balance: balance, bonds: bonds, finalPrice: finalPrice})
+            var supply = await client.state.supply
+            this.setState({connected: true, client: client, address: address, balance: balance, bonds: bonds, finalPrice: finalPrice, supply: supply})
           }, 1000)
         })
 
@@ -113,6 +116,26 @@ class App extends Component {
     })
   }
 
+  airdrop () {
+    console.log('AIRDROP !')
+
+    return new Promise ((resolve, reject) => {
+      this.state.client.send({
+        from: [
+            // tx inputs. each must include an amount:
+            { type: 'airdrop', senderAddress: 'ting'}
+        ],
+        to: [
+            // tx outputs. sum of amounts must equal sum of amounts of inputs.
+            { type: 'airdrop'}
+        ]
+      })
+      .then(async (result) => {
+        resolve()
+      })
+    })
+  }
+
   getView () {
     switch (this.state.activeItem) {
       case 'wallet':
@@ -121,6 +144,8 @@ class App extends Component {
         return <Vote vote={this.vote.bind(this)} price={this.state.finalPrice} />
       case 'bonds':
         return <Bonds bonds={this.state.bonds} buyBond={this.buyBond.bind(this)} />
+      case 'airdrop':
+        return <Airdrop supply={this.state.supply} airdrop={this.airdrop.bind(this)} />
       default:
         throw new Error('Unknown view')
     }
