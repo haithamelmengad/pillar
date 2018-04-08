@@ -30,8 +30,49 @@ class Imara {
           lastVoteWindow: 0,
           finalPrice: 0
       },
-      // logTendermint: true,
+      logTendermint: true,
+      createEmptyBlocks: true,
       devMode: true
+    })
+
+    let count = 0
+
+    this.app.useBlock((state, chain) => {
+      if ((chain.height - state.lastVoteWindow) > 20) {
+          state.lastVoteWindow = chain.height
+      } else {
+          return
+      }
+
+      //state.wallets[input.senderAddress].balance -= input.amount
+
+      var totalPrices = 0;
+      var totalWeight = 0;
+
+      console.log(state.votePrices)
+
+      for (var address in state.votePrices) {
+          totalPrices += state.votePrices[address] * state.stakedAmount[address]
+          totalWeight += state.stakedAmount[address]
+      }
+      console.log(totalPrices, totalWeight)
+      if (totalWeight > 0) {
+        state.finalPrice = totalPrices / totalWeight
+      }
+      for (var address in state.votePrices) {
+          if (state.votePrices[address] < state.finalPrice * 0.95) {
+              continue
+          }
+          else if (state.votePrices[address] > state.finalPrice * 1.05) {
+              continue
+          }
+          else {
+              continue
+              // state.wallets[address].balance += state.stakedAmount[address] * 1.01
+          }
+      }
+      state.votePrices = {}
+      state.stakedAmount = {}
     })
 
     this.app.use(coins({
@@ -115,7 +156,7 @@ class Imara {
               },
 
               onOutput(input, tx, substate, chain, state) {
-                
+
               }
           },
           'vote': {
@@ -126,45 +167,15 @@ class Imara {
                       throw Error('this input isn\'t valid!')
                   }
 
-                  console.log(chain.height)
-                  console.log(state)
-
-                  if ((chain.height - state.lastVoteWindow) > 20) {
-                      state.lastVoteWindow = chain.height
-                  } else {
-                      return
-                  }
-
                   if (input.senderAddress in state.votePrices) {
                       return
                   }
 
                   state.votePrices[input.senderAddress] = input.price
                   state.stakedAmount[input.senderAddress] = input.amount
-                  state.wallets[input.senderAddress].balance -= input.amount
 
-                  var totalPrices = 0;
-                  var totalWeight = 0;
-                  for (var address in state.votePrices) {
-                      totalPrices += state.votePrices[address] * state.stakedAmount[address]
-                      totalWeight += state.stakedAmount[address]
-                  }
-                  console.log(totalPrices, totalWeight)
-                  state.finalPrice = totalPrices / totalWeight
-                  for (var address in state.votePrices) {
-                      if (state.votePrices[address] < state.finalPrice * 0.95) {
-                          continue
-                      }
-                      else if (state.votePrices[address] > state.finalPrice * 1.05) {
-                          continue
-                      }
-                      else {
-                          continue
-                          // state.wallets[address].balance += state.stakedAmount[address] * 1.01
-                      }
-                  }
-                  state.votePrices = {}
-                  state.stakedAmount = {}
+                  console.log(state.votePrices)
+
               },
               onOutput(output, tx, substate, chain, state) {
               }
@@ -174,6 +185,7 @@ class Imara {
   }
 
   async init () {
+    console.log(this.app)
     return await this.app.listen(3000)
   }
 

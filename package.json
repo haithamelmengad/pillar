@@ -1,6 +1,6 @@
 {
-  "name": "imara",
-  "productName": "imara",
+  "name": "Pillar",
+  "productName": "Pillar",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": "src/index.js",
@@ -53,7 +53,7 @@
     "electron-compile": "^6.4.2",
     "electron-devtools-installer": "^2.1.0",
     "electron-squirrel-startup": "^1.0.0",
-    "lotion": "^0.1.17",
+    "lotion": "^0.1.18",
     "react": "^15.4.1",
     "react-chartjs-2": "^2.7.0",
     "react-dom": "^15.4.1",

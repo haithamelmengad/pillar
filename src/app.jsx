@@ -28,15 +28,17 @@ class App extends Component {
   componentDidMount () {
       this.getMyState()
         .then(async (client) => {
-          var wallets = await client.state.wallets
-          console.log(await client.state)
-          var walletsMap = new Map()
-          var address = 'ting'
-          var balance = wallets.ting.balance
-          var bonds = wallets.ting.bonds || 0
-          var finalPrice = await client.state.finalPrice
-          this.setState({connected: true, client: client, address: address, balance: balance, bonds: bonds, finalPrice: finalPrice})
+          setInterval(async () => {
+            var wallets = await client.state.wallets
+            var walletsMap = new Map()
+            var address = 'ting'
+            var balance = wallets.ting.balance
+            var bonds = wallets.ting.bonds || 0
+            var finalPrice = await client.state.finalPrice
+            this.setState({connected: true, client: client, address: address, balance: balance, bonds: bonds, finalPrice: finalPrice})
+          }, 1000)
         })
+
   }
 
   async getMyState () {
@@ -62,17 +64,7 @@ class App extends Component {
         ]
       })
       .then(async (result) => {
-        await this.getMyState()
-          .then(async (client) => {
-            var wallets = await client.state.wallets
-            var walletsMap = new Map()
-            var address = 'ting'
-            var balance = wallets.ting.balance
-            var bonds = wallets.ting.bonds || 0
-            var finalPrice = await client.state.finalPrice
-            this.setState({connected: true, client: client, address: address, balance: balance, bonds: bonds,finalPrice: finalPrice })
-            resolve()
-          })
+        resolve()
       })
     })
   }
@@ -92,19 +84,29 @@ class App extends Component {
         ]
       })
       .then(async (result) => {
-        await this.getMyState()
-          .then(async (client) => {
-            var wallets = await client.state.wallets
-            var walletsMap = new Map()
-            var address = 'ting'
-            var balance = wallets.ting.balance
-            var bonds = wallets.ting.bonds || 0
-            console.log(await client.state)
-            var finalPrice = await client.state.finalPrice
-            this.setState({connected: true, client: client, address: address, balance: balance, bonds: bonds, finalPrice: finalPrice })
-            resolve()
-          })
-      })    })
+        resolve()
+      })
+    })
+  }
+
+  vote (stake, price) {
+    console.log('VOTE !')
+
+    return new Promise ((resolve, reject) => {
+      this.state.client.send({
+        from: [
+            // tx inputs. each must include an amount:
+            {amount: Number(stake), type: 'vote', price: Number(price), senderAddress: 'ting'}
+        ],
+        to: [
+            // tx outputs. sum of amounts must equal sum of amounts of inputs.
+            {amount: Number(stake), type: 'vote', price: Number(price)}
+        ]
+      })
+      .then(async (result) => {
+        resolve()
+      })
+    })
   }
 
   getView () {
@@ -112,7 +114,7 @@ class App extends Component {
       case 'wallet':
         return <Wallet sendTransaction={this.sendTransaction.bind(this)} address={this.state.address} balance={this.state.balance} />
       case 'vote':
-        return <Vote />
+        return <Vote vote={this.vote.bind(this)} price={this.state.finalPrice} />
       case 'bonds':
         return <Bonds bonds={this.state.bonds} buyBond={this.buyBond.bind(this)} />
       default:
