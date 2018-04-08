@@ -3,36 +3,39 @@ const coins = require('coins')
 
 const app = lotion({
     initialState: {
-        wallets: [{
+        wallets: {
             'ting': {
-            balance: 10,
+                balance: 100,
+                bonds: 0
+            },
+            'wai': {
+                balance: 100,
+                bonds: 0
+            },
+            'badActor': {
+                balance: 100,
+                bonds: 0
             }
         },
-        {
-            'wai' :  {
-            balance: 10,
-            }
-        }],
         bondQueue: [],
-        bondFactor : 0.9,
+        bondFactor: 0.9,
         airdropFactor: 1.1,
-        marketCap : 20,
+        marketCap: 20,
         votePrices: {},
         stakedAmount: {},
-        voteAfter: 0,
-        waiting: true
+        lastVoteWindow: 0,
     },
     // logTendermint: true,
     devMode: true
 })
 
-const redeemBonds = (factor, bondqueue) => {
-
-    while(bondqueue.length && ){
-
-
-    }
-}
+// const redeemBonds = (factor, bondqueue) => {
+//
+//     while (bondqueue.length &&) {
+//
+//
+//     }
+// }
 
 app.use(coins({
     name: 'imara',
@@ -43,7 +46,7 @@ app.use(coins({
                 // this type are used as a transaction input.
 
                 // if the provided input isn't valid, throw an error.
-                if(!(input)) {
+                if (!(input)) {
                     throw Error('this input isn\'t valid!')
                 }
 
@@ -61,83 +64,90 @@ app.use(coins({
                 state[output.receiverAddress].balance = (state[output.receiverAddress].balance || 0) + output.amount
             }
         },
-        'airdrop':{
+        // 'airdrop': {
+        //
+        //     onInput(input, tx, substate, chain, state) {
+        //
+        //         if (!(input)) {
+        //             throw Error('this input isn\'t valid!')
+        //         }
+        //
+        //         const targetCap = state.marketCap * state.airdropFactor
+        //         while (state.bondqueue.length && state.marketCap < targetCap) {
+        //             state.bondqueue[].balance = (state[input.senderAddress].balance || 0) - input.amount * state.bondFactor
+        //             state.marketCap += 1
+        //         }
+        //         state[input.senderAddress].balance = (state[input.senderAddress].balance || 0) - input.amount * state.bondFactor
+        //         state.bondQueue.pop({bondowner: input.senderAddress, amount: input.amount})
+        //
+        //
+        //     },
+        //     onOutput(input, tx, substate, chain, state) {
+        //
+        //     }
+        //
+        // },
+        'bonds': {
 
             onInput(input, tx, substate, chain, state) {
 
-                if(!(input)) {
+                if (!(input)) {
                     throw Error('this input isn\'t valid!')
                 }
-
-                const targetCap = state.marketCap * state.airdropFactor
-                while(state.bondqueue.length && state.marketCap < targetCap){
-                    state.bondqueue[].balance = (state[input.senderAddress].balance || 0) - input.amount*state.bondFactor
-                    state.marketCap += 1
-                }
-                state[input.senderAddress].balance = (state[input.senderAddress].balance || 0) - input.amount*state.bondFactor
-                state.bondQueue.pop({bondowner : input.senderAddress, amount: input.amount})
+                state.bondQueue.push({bondowner: input.senderAddress, amount: input.amount})
 
 
-
-            },
-            onOutput(input, tx, substate, chain, state){
+                state[input.senderAddress].balance = (state[input.senderAddress].balance || 0) - input.amount * state.bondFactor
 
             }
-
         },
-        'bonds':{
+        'vote': {
 
             onInput(input, tx, substate, chain, state) {
 
-                if(!(input)) {
+                if (!(input)) {
                     throw Error('this input isn\'t valid!')
                 }
-                state.bondQueue.push({bondowner : input.senderAddress, amount: input.amount})
 
+                console.log(chain.height)
+                console.log(state)
 
-                state[input.senderAddress].balance = (state[input.senderAddress].balance || 0) - input.amount*state.bondFactor
+                if ((chain.height - state.lastVoteWindow) > 20) {
+                    state.lastVoteWindow = chain.height
+                } else {
+                    return
+                }
 
-            }
-        },
-        'price':{
-
-            onInput(input, tx, substate, chain, state) {
-
-                if(!(input)) {
-                    throw Error('this input isn\'t valid!')
+                if (input.senderAddress in state.votePrices) {
+                    return
                 }
 
                 state.votePrices[input.senderAddress] = input.price
                 state.stakedAmount[input.senderAddress] = input.amount
-                state.accounts[input.senderAddress].balance -= input.amount
-		        if(chain.height%60) {
-                    if(!state.waiting){
-                        state.voteAfter = chain.height + 60
-                    }
-                    state.waiting = true
-		        }
-                if(chain.height < state.voteAfter) {
-                    return
-		        }
-                state.waiting = false
+                state.wallets[input.senderAddress].balance -= input.amount
+
                 var totalPrices = 0;
                 var totalWeight = 0;
                 for (var address in state.votePrices) {
                     totalPrices += state.votePrices[address] * state.stakedAmount[address]
                     totalWeight += state.stakedAmount[address]
                 }
-                state.finalPrice = totalPrices/totalWeight
+                console.log(totalPrices, totalWeight)
+                state.finalPrice = totalPrices / totalWeight
                 for (var address in state.votePrices) {
                     if (state.votePrices[address] < state.finalPrice * 0.95) {
-                        return
+                        continue
                     }
                     else if (state.votePrices[address] > state.finalPrice * 1.05) {
-                        return
+                        continue
                     }
                     else {
-                        state.accounts[address].balance += state.stakedAmount[address] * 1.01
+                        continue
+                        // state.wallets[address].balance += state.stakedAmount[address] * 1.01
                     }
-                } 
+                }
+                state.votePrices = {}
+                state.stakedAmount = {}
             },
             onOutput(output, tx, substate, chain, state) {
             }
