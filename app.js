@@ -1,33 +1,27 @@
 const lotion = require('lotion')
 const coins = require('coins')
+const _ = require('underscore')
 
 const app = lotion({
     initialState: {
-        accounts: [{
-            'ting': {
-            balance: 10,
+        wallets: {
+            "ting": {
+            balance: 20
+            }
+        ,
+            "wai" :  {
+            balance: 20
             }
         },
-        {
-            'wai' :  {
-            balance: 10,
-            }
-        }],
-        bondQueue: [],
+        bondQueue: [{bondowner: 'ting', amount: 2}],
         bondFactor : 0.9,
         airdropFactor: 1.1,
-        marketCap : 20
+        supply : 40
     },
     // logTendermint: true,
     devMode: true
 })
 
-const redeemBonds = (factor, bondqueue) => {
-
-    while(bondqueue.length && ){
-
-    }
-}
 
 app.use(coins({
     name: 'imara',
@@ -44,7 +38,7 @@ app.use(coins({
 
                 // if the input is valid, update the state to
                 // reflect the coins having been spent.
-                state[input.senderAddress].balance -= input.amount
+                state.wallets[input.senderAddress].balance -= input.amount
             },
 
             onOutput(output, tx, substate, chain, state) {
@@ -53,30 +47,47 @@ app.use(coins({
 
                 // usually you'll just want to mutate the state
                 // to increment the balance of some address.
-                state[output.receiverAddress].balance = (state[output.receiverAddress].balance || 0) + output.amount
+                state.wallets[output.receiverAddress].balance = (state.wallets[output.receiverAddress].balance || 0) + output.amount
             }
         },
         'airdrop':{
             
             onInput(input, tx, substate, chain, state) {
-                
                 if(!(input)) {
                     throw Error('this input isn\'t valid!')
                 }
-
-                const targetCap = state.marketCap * state.airdropFactor
-                while(state.bondqueue.length && state.marketCap < targetCap){
-                    state.bondqueue[].balance = (state[input.senderAddress].balance || 0) - input.amount*state.bondFactor
-                    state.marketCap += 1
+                const initialSupply = state.supply
+                _.mapObject(state.wallets, (wallet, address) => { 
+                    wallet.share = wallet.balance/initialSupply
+                })
+                const targetCap = state.supply * state.airdropFactor
+                while(state.bondQueue.length){
+                    const bondtoRedeem = state.bondQueue.splice(0,1)
+                    for(let i = 0; i < bondtoRedeem[0].amount; i++){
+                        if(state.supply < targetCap){
+                            state.wallets[bondtoRedeem[0].bondowner].balance += 1
+                            state.supply += 1
+                        }
+                    }
                 }
-                state[input.senderAddress].balance = (state[input.senderAddress].balance || 0) - input.amount*state.bondFactor
-                state.bondQueue.pop({bondowner : input.senderAddress, amount: input.amount})
+                if(state.supply < targetCap){
+                    let margin = (targetCap - state.supply)
+                    _.mapObject(state.wallets, (wallet, address) => {
+                            console.log(wallet.share)
+                            wallet.balance += margin*(wallet.share)
+                            state.supply += margin*(wallet.share)
+                    })
+                
+                }
+                console.log('this is new supply : ', state.supply)
+
+                // state.wallets[input.senderAddress].balance = (state.wallets[input.senderAddress].balance || 0) - input.amount*state.bondFactor
+                // state.bondQueue.pop({bondowner : input.senderAddress, amount: input.amount})
                 
 
             
             },
             onOutput(input, tx, substate, chain, state){
-
             }
 
         },
@@ -88,10 +99,12 @@ app.use(coins({
                     throw Error('this input isn\'t valid!')
                 }
                 state.bondQueue.push({bondowner : input.senderAddress, amount: input.amount})
-            
 
-                state[input.senderAddress].balance = (state[input.senderAddress].balance || 0) - input.amount*state.bondFactor
-            
+                state.wallets[input.senderAddress].balance = (state.wallets[input.senderAddress].balance || 0) - input.amount*state.bondFactor
+            },
+
+            onOutput(input, tx, substate, chain, state){
+
             }
         }
     }
